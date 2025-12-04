@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Machine</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>☕ Coffee Machine</h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary" id="adminBtn">🔐 Admin</button>
+            <button class="btn btn-secondary" id="exitBtn">👋 Exit</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Resource Status Bar -->
+        <section class="resource-status">
+            <h2>Machine Status</h2>
+            <div class="resource-grid">
+                <div class="resource-item">
+                    <label>Water</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="waterBar" style="width: 100%"></div>
+                    </div>
+                    <span class="resource-value" id="waterValue">500 ml</span>
+                </div>
+                <div class="resource-item">
+                    <label>Coffee</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="coffeeBar" style="width: 100%"></div>
+                    </div>
+                    <span class="resource-value" id="coffeeValue">500 g</span>
+                </div>
+                <div class="resource-item">
+                    <label>Milk</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="milkBar" style="width: 100%"></div>
+                    </div>
+                    <span class="resource-value" id="milkValue">500 ml</span>
+                </div>
+                <div class="resource-item">
+                    <label>Sugar</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="sugarBar" style="width: 100%"></div>
+                    </div>
+                    <span class="resource-value" id="sugarValue">500 g</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coffee Menu -->
+        <section class="coffee-menu">
+            <h2>Select Your Coffee</h2>
+            <div class="coffee-grid" id="coffeeGrid">
+                <!-- Coffee cards will be dynamically loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <span class="close" id="closePayment">&times;</span>
+            <h2>Payment</h2>
+            <div class="payment-info">
+                <p>Selected: <strong id="selectedCoffeeName"></strong></p>
+                <p>Cost: ₹<strong id="selectedCoffeeCost"></strong></p>
+            </div>
+            <div class="payment-form">
+                <div class="form-group">
+                    <label>₹5 Coins:</label>
+                    <input type="number" id="coins5" min="0" value="0" class="coin-input">
+                </div>
+                <div class="form-group">
+                    <label>₹10 Coins:</label>
+                    <input type="number" id="coins10" min="0" value="0" class="coin-input">
+                </div>
+                <div class="form-group">
+                    <label>₹20 Coins:</label>
+                    <input type="number" id="coins20" min="0" value="0" class="coin-input">
+                </div>
+                <div class="payment-summary">
+                    <p>Total Paid: ₹<span id="totalPaid">0</span></p>
+                    <p>Change: ₹<span id="changeAmount">0</span></p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="confirmPayment">Confirm Payment</button>
+                    <button class="btn btn-secondary" id="cancelPayment">Cancel</button>
+                </div>
+                <div id="paymentError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="adminLoginModal">
+        <div class="modal-content">
+            <span class="close" id="closeAdminLogin">&times;</span>
+            <h2>Admin Login</h2>
+            <div class="admin-form">
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="adminLoginBtn">Login</button>
+                    <button class="btn btn-secondary" id="cancelAdminLogin">Cancel</button>
+                </div>
+                <div id="adminLoginError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Modal -->
+    <div class="modal" id="adminDashboardModal">
+        <div class="modal-content admin-dashboard">
+            <span class="close" id="closeAdminDashboard">&times;</span>
+            <h2>Admin Dashboard</h2>
+            
+            <!-- Report Section -->
+            <div class="admin-report">
+                <h3>Machine Report</h3>
+                <div class="report-info">
+                    <p><strong>Total Amount Collected:</strong> ₹<span id="reportAmount">0</span></p>
+                </div>
+                <div class="report-resources">
+                    <div class="report-item">
+                        <label>Water:</label>
+                        <span id="reportWater">500 ml</span>
+                    </div>
+                    <div class="report-item">
+                        <label>Coffee:</label>
+                        <span id="reportCoffee">500 g</span>
+                    </div>
+                    <div class="report-item">
+                        <label>Milk:</label>
+                        <span id="reportMilk">500 ml</span>
+                    </div>
+                    <div class="report-item">
+                        <label>Sugar:</label>
+                        <span id="reportSugar">500 g</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingredient Management Section -->
+            <div class="ingredient-management">
+                <h3>Manage Ingredients</h3>
+                <div class="ingredient-actions">
+                    <div class="ingredient-item">
+                        <label>Water:</label>
+                        <div class="ingredient-controls">
+                            <button class="btn btn-sm btn-success" onclick="openIngredientModal('water', 'add')">Add</button>
+                            <button class="btn btn-sm btn-danger" onclick="openIngredientModal('water', 'decrease')">Decrease</button>
+                        </div>
+                    </div>
+                    <div class="ingredient-item">
+                        <label>Coffee:</label>
+                        <div class="ingredient-controls">
+                            <button class="btn btn-sm btn-success" onclick="openIngredientModal('coffee', 'add')">Add</button>
+                            <button class="btn btn-sm btn-danger" onclick="openIngredientModal('coffee', 'decrease')">Decrease</button>
+                        </div>
+                    </div>
+                    <div class="ingredient-item">
+                        <label>Milk:</label>
+                        <div class="ingredient-controls">
+                            <button class="btn btn-sm btn-success" onclick="openIngredientModal('milk', 'add')">Add</button>
+                            <button class="btn btn-sm btn-danger" onclick="openIngredientModal('milk', 'decrease')">Decrease</button>
+                        </div>
+                    </div>
+                    <div class="ingredient-item">
+                        <label>Sugar:</label>
+                        <div class="ingredient-controls">
+                            <button class="btn btn-sm btn-success" onclick="openIngredientModal('sugar', 'add')">Add</button>
+                            <button class="btn btn-sm btn-danger" onclick="openIngredientModal('sugar', 'decrease')">Decrease</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Money Management Section -->
+            <div class="money-management">
+                <h3>💵 Money Management</h3>
+                <div class="money-actions">
+                    <button class="btn btn-success" onclick="openMoneyModal('deposit')">💰 Deposit Money</button>
+                    <button class="btn btn-danger" onclick="openMoneyModal('withdraw')">💸 Withdraw Money</button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="adminLogoutBtn">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Money Management Modal -->
+    <div class="modal" id="moneyModal">
+        <div class="modal-content">
+            <span class="close" id="closeMoney">&times;</span>
+            <h2 id="moneyModalTitle">Manage Money</h2>
+            <div class="money-form">
+                <div class="form-group">
+                    <label>Current Balance:</label>
+                    <p class="current-balance">₹<span id="currentBalance">0</span></p>
+                </div>
+                <div class="form-group">
+                    <label>Amount:</label>
+                    <input type="number" id="moneyAmount" min="0.01" step="0.01" value="0" placeholder="Enter amount">
+                </div>
+                <div class="form-group">
+                    <p class="preview-balance">New balance will be: ₹<span id="previewBalance">0</span></p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="confirmMoney">Confirm</button>
+                    <button class="btn btn-secondary" id="cancelMoney">Cancel</button>
+                </div>
+                <div id="moneyError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingredient Management Modal -->
+    <div class="modal" id="ingredientModal">
+        <div class="modal-content">
+            <span class="close" id="closeIngredient">&times;</span>
+            <h2 id="ingredientModalTitle">Manage Ingredient</h2>
+            <div class="ingredient-form">
+                <div class="form-group">
+                    <label id="ingredientLabel">Ingredient:</label>
+                    <p class="current-level">Current: <span id="currentIngredientLevel">0</span></p>
+                </div>
+                <div class="form-group">
+                    <label>Quantity:</label>
+                    <input type="number" id="ingredientQuantity" min="1" value="1">
+                </div>
+                <div class="form-group">
+                    <p class="preview-level">New level will be: <span id="previewLevel">0</span></p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="confirmIngredient">Confirm</button>
+                    <button class="btn btn-secondary" id="cancelIngredient">Cancel</button>
+                </div>
+                <div id="ingredientError" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content success-modal">
+            <h2>✅ Success!</h2>
+            <p id="successMessage"></p>
+            <button class="btn btn-primary" id="closeSuccess">OK</button>
+        </div>
+    </div>
+
+    <!-- Thank You Modal -->
+    <div class="modal" id="thankYouModal">
+        <div class="modal-content thank-you-modal">
+            <pre id="thankYouMessage"></pre>
+            <button class="btn btn-primary" id="closeThankYou">Close</button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
+
